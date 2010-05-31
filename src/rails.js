@@ -21,22 +21,24 @@ jQuery(function ($) {
         /**
          * Handles execution of remote calls firing overridable events along the way
          */
-        callRemote: function () {
-            var el      = this,
-                method  = el.attr('method') || el.attr('data-method') || 'GET',
-                url     = el.attr('action') || el.attr('href'),
-                dataType  = el.attr('data-type')  || 'script';
+        callRemote: function (options) {
+            var el = this,
+                defaults = {
+                  method   : el.attr('method') || el.attr('data-method') || 'GET',
+                  url      : el.attr('action') || el.attr('href'),
+                  dataType : el.attr('data-type')  || 'script' },
+                opts = $.extend(defaults, options);
 
-            if (url === undefined) {
+            if (opts.url === undefined) {
               throw "No URL specified for remote call (action or href must be present).";
             } else {
                 if (el.triggerAndReturn('ajax:before')) {
                     var data = el.is('form') ? el.serializeArray() : [];
                     $.ajax({
-                        url: url,
+                        url: opts.url,
                         data: data,
-                        dataType: dataType,
-                        type: method.toUpperCase(),
+                        dataType: opts.dataType,
+                        type: opts.method.toUpperCase(),
                         beforeSend: function (xhr) {
                             el.trigger('ajax:loading', xhr);
                         },
